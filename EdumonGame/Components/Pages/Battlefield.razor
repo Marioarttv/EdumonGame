@@ -1,0 +1,150 @@
+﻿@using EdumonGame.Models
+@using EdumonGame.Services
+@inject GameState GameState
+
+<div class="battle-field">
+    <div class="opponent-area">
+        <EdumonCard Edumon="@GameState.CurrentBattle.OpponentEdumon" />
+    </div>
+
+    <div class="player-area">
+        <EdumonCard Edumon="@GameState.CurrentBattle.PlayerEdumon" />
+    </div>
+
+    <div class="battle-controls">
+        @if (ShowMoves)
+        {
+            <div class="moves-list">
+                @foreach (var move in GameState.CurrentBattle.PlayerEdumon.Moves)
+                {
+                    <button class="move move-@move.Base.Type.ToString().ToLower()" @onclick="() => UseMove(move)">
+                        @move.Base.Name
+                    </button>
+                }
+                <button class="back-button" @onclick="() => ShowMoves = false">Back</button>
+            </div>
+        }
+        else
+        {
+            <div class="main-options">
+                <button @onclick="() => ShowMoves = true">Fight</button>
+                <button @onclick="OpenEduSwap">Swap</button>
+                <button @onclick="UseItem">Item</button>
+                <button @onclick="TryRun">Run</button>
+            </div>
+        }
+    </div>
+
+    <div class="battle-log">
+        @foreach (var message in BattleLog)
+        {
+            <p>@message</p>
+        }
+    </div>
+</div>
+
+@code {
+    private bool ShowMoves = false;
+    private List<string> BattleLog = new List<string>();
+    private Random random = new Random();
+
+    protected override void OnInitialized()
+    {
+        BattleLog.Add("Battle started!");
+        BattleLog.Add($"Enemy {GameState.CurrentBattle.OpponentEdumon.Base.Name} appeared!");
+        BattleLog.Add($"Go, {GameState.CurrentBattle.PlayerEdumon.Base.Name}!");
+    }
+
+    private async Task UseMove(Move move)
+    {
+        // Player's turn
+        BattleLog.Add($"{GameState.CurrentBattle.PlayerEdumon.Base.Name} used {move.Base.Name}!");
+
+        // Calculate damage
+        var damageDetails = GameState.CurrentBattle.OpponentEdumon.TakeDamage(move, GameState.CurrentBattle.PlayerEdumon);
+
+        // Display battle message based on effectiveness
+        if (damageDetails.TypeEffectiveness > 1f)
+            BattleLog.Add("It's super effective!");
+        else if (damageDetails.TypeEffectiveness < 1f)
+            BattleLog.Add("It's not very effective...");
+
+        if (damageDetails.Critical > 1f)
+            BattleLog.Add("A critical hit!");
+
+        // Check if opponent fainted
+        if (GameState.CurrentBattle.OpponentEdumon.HP <= 0)
+        {
+            BattleLog.Add($"Enemy {GameState.CurrentBattle.OpponentEdumon.Base.Name} fainted!");
+            // Give exp, possibly level up, etc.
+            return;
+        }
+
+        // Enemy's turn
+        await Task.Delay(1000); // Short delay to make turns feel more natural
+
+        var enemyMove = GameState.CurrentBattle.OpponentEdumon.GetRandomMove();
+        BattleLog.Add($"Enemy {GameState.CurrentBattle.OpponentEdumon.Base.Name} used {enemyMove.Base.Name}!");
+
+        var playerDamageDetails = GameState.CurrentBattle.PlayerEdumon.TakeDamage(
+            enemyMove, GameState.CurrentBattle.OpponentEdumon);
+
+        if (playerDamageDetails.TypeEffectiveness > 1f)
+            BattleLog.Add("It's super effective!");
+        else if (playerDamageDetails.TypeEffectiveness < 1f)
+            BattleLog.Add("It's not very effective...");
+
+        if (playerDamageDetails.Critical > 1f)
+            BattleLog.Add("A critical hit!");
+
+        // Check if player's Edumon fainted
+        if (GameState.CurrentBattle.PlayerEdumon.HP <= 0)
+        {
+            BattleLog.Add($"{GameState.CurrentBattle.PlayerEdumon.Base.Name} fainted!");
+            // Handle player loss
+        }
+
+        // Reset the move selection
+        ShowMoves = false;
+
+        // Force UI refresh
+        StateHasChanged();
+    }
+
+    private void OpenEduSwap()
+    {
+        BattleLog.Add("You don't have any other Edumons to swap to!");
+    }
+
+    private void UseItem()
+    {
+        BattleLog.Add("You don't have any items to use!");
+    }
+
+    private void TryRun()
+    {
+        if (random.Next(10) > 3) // 70% chance to run
+        {
+            BattleLog.Add("Got away safely!");
+            // End battle logic would be handled by the parent component
+        }
+        else
+        {
+            BattleLog.Add("Couldn't escape!");
+
+            // Enemy still gets a turn
+            Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+
+                var enemyMove = GameState.CurrentBattle.OpponentEdumon.GetRandomMove();
+                BattleLog.Add($"Enemy {GameState.CurrentBattle.OpponentEdumon.Base.Name} used {enemyMove.Base.Name}!");
+
+                var playerDamageDetails = GameState.CurrentBattle.PlayerEdumon.TakeDamage(
+                    enemyMove, GameState.CurrentBattle.OpponentEdumon);
+
+                StateHasChanged();
+            });
+        }
+    }
+}

@@ -1,0 +1,38 @@
+﻿@using EdumonGame.Models
+
+<div class="edumon-card @(Selected ? "selected" : "")">
+    <div class="edumon-sprite">
+        <img src="@Edumon.Base.FrontSpriteUrl" alt="@Edumon.Base.Name" />
+    </div>
+    <div class="edumon-info">
+        <h3>@Edumon.Base.Name</h3>
+        <div class="hp-bar">
+            <div class="hp-fill" style="width: @((Edumon.HP * 100 / Edumon.MaxHp))%"></div>
+        </div>
+        <p>HP: @Edumon.HP / @Edumon.MaxHp</p>
+        <p>Level: @Edumon.Level</p>
+        <div class="type-badges">
+            <span class="type type-@Edumon.Base.Type1.ToString().ToLower()">@Edumon.Base.Type1</span>
+            @if (Edumon.Base.Type2 != EdumonType.None)
+            {
+                <span class="type type-@Edumon.Base.Type2.ToString().ToLower()">@Edumon.Base.Type2</span>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Edumon Edumon { get; set; }
+
+    [Parameter]
+    public bool Selected { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<Edumon> OnSelect { get; set; }
+
+    private async Task SelectEdumon()
+    {
+        await OnSelect.InvokeAsync(Edumon);
+    }
+}

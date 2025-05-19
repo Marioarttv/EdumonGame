@@ -1,0 +1,75 @@
+[
+  {
+    "id": "tackle",
+    "name": "Tackle",
+    "description": "A physical attack in which the user charges and slams into the target with its whole body.",
+    "type": "Normal",
+    "power": 40,
+    "accuracy": 100,
+    "alwaysHits": false,
+    "priority": 0,
+    "category": "Physical",
+    "effects": {
+      "boosts": [],
+      "status": "None",
+      "volatileStatus": "None"
+    },
+    "secondaries": [],
+    "target": "Foe",
+    "soundUrl": "/sounds/moves/tackle.mp3",
+    "animationId": "tackle"
+  },
+  {
+    "id": "growl",
+    "name": "Growl",
+    "description": "The user growls in an endearing way, making opposing Pokémon less wary. This lowers their Attack stat.",
+    "type": "Normal",
+    "power": 0,
+    "accuracy": 100,
+    "alwaysHits": false,
+    "priority": 0,
+    "category": "Status",
+    "effects": {
+      "boosts": [
+        {
+          "stat": "Attack",
+          "boost": -1
+        }
+      ],
+      "status": "None",
+      "volatileStatus": "None"
+    },
+    "secondaries": [],
+    "target": "Foe",
+    "soundUrl": "/sounds/moves/growl.mp3",
+    "animationId": "growl"
+  },
+  {
+    "id": "ember",
+    "name": "Ember",
+    "description": "The target is attacked with small flames. This may also leave the target with a burn.",
+    "type": "Fire",
+    "power": 40,
+    "accuracy": 100,
+    "alwaysHits": false,
+    "priority": 0,
+    "category": "Special",
+    "effects": {
+      "boosts": [],
+      "status": "None",
+      "volatileStatus": "None"
+    },
+    "secondaries": [
+      {
+        "chance": 10,
+        "status": "Burn",
+        "volatileStatus": "None",
+        "boosts": [],
+        "target": "Foe"
+      }
+    ],
+    "target": "Foe",
+    "soundUrl": "/sounds/moves/ember.mp3",
+    "animationId": "ember"
+  }
+]

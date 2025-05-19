@@ -1,0 +1,37 @@
+[
+  {
+    "id": "001",
+    "name": "Bulbasaur",
+    "description": "A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.",
+    "frontSpriteUrl": "/images/edumons/bulbasaur-front.png",
+    "backSpriteUrl": "/images/edumons/bulbasaur-back.png",
+    "type1": "Grass",
+    "type2": "Poison",
+    "maxHp": 45,
+    "attack": 49,
+    "defense": 49,
+    "spAttack": 65,
+    "spDefense": 65,
+    "speed": 45,
+    "expYield": 64,
+    "growthRate": "MediumSlow",
+    "catchRate": 45,
+    "learnableMoves": [
+      {
+        "moveBase": "TackleMoveId",
+        "level": 1
+      },
+      {
+        "moveBase": "GrowlMoveId",
+        "level": 1
+      }
+    ],
+    "evolutions": [
+      {
+        "evolvesInto": "002",
+        "requiredLevel": 16,
+        "requiredItem": null
+      }
+    ]
+  }
+]

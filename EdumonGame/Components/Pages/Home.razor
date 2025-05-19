@@ -1,0 +1,26 @@
+﻿@page "/"
+@using EdumonGame.Services
+
+<div class="welcome-screen">
+    <h1>Welcome to Edumon!</h1>
+    <p>A Pokémon x Balatro clone with an educational twist</p>
+
+    <div class="buttons">
+        <button class="btn btn-primary" @onclick="StartNewGame">New Game</button>
+        <button class="btn btn-secondary" disabled>Continue</button>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    private GameState GameState { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task StartNewGame()
+    {
+        await GameState.InitializeNewGameAsync();
+        NavigationManager.NavigateTo("edumon-list");
+    }
+}

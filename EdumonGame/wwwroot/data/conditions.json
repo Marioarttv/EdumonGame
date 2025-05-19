@@ -1,0 +1,38 @@
+[
+  {
+    "id": "Poison",
+    "name": "Poison",
+    "description": "Causes damage to the Edumon at the end of each turn.",
+    "startMessage": "was poisoned!"
+  },
+  {
+    "id": "Burn",
+    "name": "Burn",
+    "description": "Causes damage to the Edumon at the end of each turn and reduces Attack.",
+    "startMessage": "was burned!"
+  },
+  {
+    "id": "Sleep",
+    "name": "Sleep",
+    "description": "Edumon cannot move for several turns.",
+    "startMessage": "fell asleep!"
+  },
+  {
+    "id": "Paralysis",
+    "name": "Paralysis",
+    "description": "Edumon may be unable to move and its Speed is reduced.",
+    "startMessage": "was paralyzed!"
+  },
+  {
+    "id": "Freeze",
+    "name": "Freeze",
+    "description": "Edumon cannot move until it thaws.",
+    "startMessage": "was frozen solid!"
+  },
+  {
+    "id": "Confusion",
+    "name": "Confusion",
+    "description": "Edumon may hurt itself in confusion.",
+    "startMessage": "became confused!"
+  }
+]

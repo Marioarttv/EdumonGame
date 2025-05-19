@@ -1,0 +1,217 @@
+﻿/* Edumon Card Styles */
+.edumon-card {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px;
+    width: 250px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+    .edumon-card.selected {
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0,123,255,0.5);
+    }
+
+.edumon-sprite {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+    .edumon-sprite img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+.edumon-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.hp-bar {
+    height: 10px;
+    background-color: #eee;
+    border-radius: 5px;
+    margin: 5px 0;
+    overflow: hidden;
+}
+
+.hp-fill {
+    height: 100%;
+    background-color: #4caf50;
+    transition: width 0.3s ease;
+}
+
+.type-badges {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.type {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: white;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+
+/* Type Colors */
+.type-normal {
+    background-color: #A8A878;
+}
+
+.type-fire {
+    background-color: #F08030;
+}
+
+.type-water {
+    background-color: #6890F0;
+}
+
+.type-grass {
+    background-color: #78C850;
+}
+
+.type-electric {
+    background-color: #F8D030;
+}
+
+.type-ice {
+    background-color: #98D8D8;
+}
+
+.type-fighting {
+    background-color: #C03028;
+}
+
+.type-poison {
+    background-color: #A040A0;
+}
+
+.type-ground {
+    background-color: #E0C068;
+}
+
+.type-flying {
+    background-color: #A890F0;
+}
+
+.type-psychic {
+    background-color: #F85888;
+}
+
+.type-bug {
+    background-color: #A8B820;
+}
+
+.type-rock {
+    background-color: #B8A038;
+}
+
+.type-ghost {
+    background-color: #705898;
+}
+
+.type-dragon {
+    background-color: #7038F8;
+}
+
+.type-dark {
+    background-color: #705848;
+}
+
+.type-steel {
+    background-color: #B8B8D0;
+}
+
+.type-fairy {
+    background-color: #EE99AC;
+}
+
+/* Battle Field Styles */
+.battle-field {
+    padding: 20px;
+    background-color: #f0f8ff;
+    border-radius: 10px;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.opponent-area, .player-area {
+    display: flex;
+    justify-content: center;
+}
+
+.battle-controls {
+    display: flex;
+    justify-content: center;
+}
+
+.moves-list, .main-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.battle-log {
+    height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: white;
+}
+
+    .battle-log p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+button {
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    button.back-button {
+        background-color: #6c757d;
+    }
+
+        button.back-button:hover {
+            background-color: #5a6268;
+        }
+
+    /* Move type colors */
+    button.move-normal {
+        background-color: #A8A878;
+    }
+
+    button.move-fire {
+        background-color: #F08030;
+    }
+
+    button.move-water {
+        background-color: #6890F0;
+    }
+
+    button.move-grass {
+        background-color: #78C850;
+    }
+/* Add other move types colors as needed */

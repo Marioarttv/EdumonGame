@@ -1,0 +1,204 @@
+﻿@page "/edumon-list"
+@using EdumonGame.Models
+@using EdumonGame.Services
+@inject GameState GameState
+
+<h3>My Edumons</h3>
+
+@if (GameState.PlayerEdumons.Count == 0)
+{
+    <p>You don't have any Edumons yet!</p>
+}
+else
+{
+    <div class="edumon-grid">
+        @foreach (var edumon in GameState.PlayerEdumons)
+        {
+            <EdumonCard Edumon="edumon" Selected="selectedEdumon == edumon" OnSelect="SelectEdumon" />
+        }
+    </div>
+
+    @if (selectedEdumon != null)
+    {
+        <div class="edumon-details">
+            <h4>@selectedEdumon.Base.Name Details</h4>
+            <p>@selectedEdumon.Base.Description</p>
+
+            <h5>Moves:</h5>
+            <ul>
+                @foreach (var move in selectedEdumon.Moves)
+                {
+                    <li>
+                        <span class="move-name">@move.Base.Name</span> -
+                        <span class="move-type type-@move.Base.Type.ToString().ToLower()">@move.Base.Type</span>
+                        <span class="move-power">Power: @move.Base.Power</span>
+                    </li>
+                }
+            </ul>
+
+            <button class="btn btn-primary" @onclick="GoToBattle">Battle with @selectedEdumon.Base.Name</button>
+        </div>
+    }
+}
+
+@code {
+    private Edumon selectedEdumon;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // If no player Edumons, initialize with test data
+        if (GameState.PlayerEdumons.Count == 0)
+        {
+            LoadTestData();
+        }
+
+        // Select first Edumon by default
+        if (GameState.PlayerEdumons.Count > 0)
+        {
+            selectedEdumon = GameState.PlayerEdumons[0];
+        }
+    }
+
+    private void SelectEdumon(Edumon edumon)
+    {
+        selectedEdumon = edumon;
+    }
+
+    private void GoToBattle()
+    {
+        GameState.CurrentBattle = new BattleState
+        {
+            PlayerEdumon = selectedEdumon,
+            OpponentEdumon = GenerateRandomOpponent()
+        };
+
+        NavigationManager.NavigateTo("battle");
+    }
+
+    private void LoadTestData()
+    {
+        // This is just for testing before we have proper game initialization
+        var testEdumon1 = new EdumonBase
+        {
+            Id = "001",
+            Name = "Bulbasaur",
+            Description = "A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.",
+            FrontSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+            BackSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png",
+            Type1 = EdumonType.Grass,
+            Type2 = EdumonType.Poison,
+            MaxHp = 45,
+            Attack = 49,
+            Defense = 49,
+            SpAttack = 65,
+            SpDefense = 65,
+            Speed = 45,
+            LearnableMoves = new List<LearnableMove>(), // Initialize this!
+            Evolutions = new List<Evolution>(), // Initialize this!
+            LearnableByItems = new List<MoveBase>() // Initialize this!
+        };
+
+        var tackle = new MoveBase
+        {
+            Id = "tackle",
+            Name = "Tackle",
+            Description = "A physical attack in which the user charges and slams into the target with its whole body.",
+            Type = EdumonType.Normal,
+            Power = 40,
+            Accuracy = 100,
+            Category = MoveBase.MoveCategory.Physical
+        };
+
+        var vineWhip = new MoveBase
+        {
+            Id = "vinewhip",
+            Name = "Vine Whip",
+            Description = "The target is struck with slender, whiplike vines.",
+            Type = EdumonType.Grass,
+            Power = 45,
+            Accuracy = 100,
+            Category = MoveBase.MoveCategory.Physical
+        };
+
+        // Create a learnable move and add it to the learnable moves list
+        testEdumon1.LearnableMoves.Add(new LearnableMove
+        {
+            MoveBase = tackle,
+            Level = 1
+        });
+
+        testEdumon1.LearnableMoves.Add(new LearnableMove
+        {
+            MoveBase = vineWhip,
+            Level = 3
+        });
+
+        var testEdumon = new Edumon(testEdumon1, 5);
+
+        // No need to add moves manually as they will be derived from LearnableMoves
+
+        GameState.PlayerEdumons.Add(testEdumon);
+    }
+
+    private Edumon GenerateRandomOpponent()
+    {
+        // For testing - create a simple opponent
+        var testOpponent = new EdumonBase
+        {
+            Id = "004",
+            Name = "Charmander",
+            Description = "A fire Pokémon that prefers hot places. When it rains, steam is said to spout from the tip of its tail.",
+            FrontSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
+            BackSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/4.png",
+            Type1 = EdumonType.Fire,
+            Type2 = EdumonType.None,
+            MaxHp = 39,
+            Attack = 52,
+            Defense = 43,
+            SpAttack = 60,
+            SpDefense = 50,
+            Speed = 65,
+            LearnableMoves = new List<LearnableMove>()
+        };
+
+        var scratch = new MoveBase
+        {
+            Id = "scratch",
+            Name = "Scratch",
+            Description = "Hard, pointed, sharp claws rake the target to inflict damage.",
+            Type = EdumonType.Normal,
+            Power = 40,
+            Accuracy = 100,
+            Category = MoveBase.MoveCategory.Physical
+        };
+
+        var ember = new MoveBase
+        {
+            Id = "ember",
+            Name = "Ember",
+            Description = "The target is attacked with small flames. This may also leave the target with a burn.",
+            Type = EdumonType.Fire,
+            Power = 40,
+            Accuracy = 100,
+            Category = MoveBase.MoveCategory.Special,
+            Secondaries = new List<MoveBase.SecondaryEffects>
+            {
+                new MoveBase.SecondaryEffects
+                {
+                    Chance = 10,
+                    Status = ConditionID.Burn,
+                    Target = MoveBase.MoveTarget.Foe
+                }
+            }
+        };
+
+        var opponent = new Edumon(testOpponent, 5);
+        opponent.Moves.Add(new Move(scratch));
+        opponent.Moves.Add(new Move(ember));
+
+        return opponent;
+    }
+}
