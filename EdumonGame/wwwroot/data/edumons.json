@@ -2,7 +2,7 @@
   {
     "id": "001",
     "name": "Bulbasaur",
-    "description": "A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.",
+    "description": "A strange seed was planted on its back at birth. The plant sprouts and grows with this PokÃ©mon.",
     "frontSpriteUrl": "/images/edumons/bulbasaur-front.png",
     "backSpriteUrl": "/images/edumons/bulbasaur-back.png",
     "type1": "Grass",
@@ -31,6 +31,180 @@
         "evolvesInto": "002",
         "requiredLevel": 16,
         "requiredItem": null
+      }
+    ]
+  },
+  {
+    "id": "004",
+    "name": "Charmander",
+    "description": "The flame on its tail shows the strength of its life force. If it is weak, the flame also burns weakly.",
+    "frontSpriteUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
+    "backSpriteUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/4.png",
+    "type1": "Fire",
+    "type2": null,
+    "maxHp": 39,
+    "attack": 52,
+    "defense": 43,
+    "spAttack": 60,
+    "spDefense": 50,
+    "speed": 65,
+    "expYield": 62,
+    "growthRate": "MediumSlow",
+    "catchRate": 45,
+    "learnableMoves": [
+      {
+        "moveBase": "tackle",
+        "level": 1
+      },
+      {
+        "moveBase": "ember",
+        "level": 1
+      },
+      {
+        "moveBase": "growl",
+        "level": 4
+      }
+    ],
+    "evolutions": [
+      {
+        "evolvesInto": "005",
+        "requiredLevel": 16,
+        "requiredItem": null
+      }
+    ]
+  },
+  {
+    "id": "007",
+    "name": "Squirtle",
+    "description": "It shelters itself in its shell, then strikes back with spouts of water at every opportunity.",
+    "frontSpriteUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png",
+    "backSpriteUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/7.png",
+    "type1": "Water",
+    "type2": null,
+    "maxHp": 44,
+    "attack": 48,
+    "defense": 65,
+    "spAttack": 50,
+    "spDefense": 64,
+    "speed": 43,
+    "expYield": 63,
+    "growthRate": "MediumSlow",
+    "catchRate": 45,
+    "learnableMoves": [
+      {
+        "moveBase": "tackle",
+        "level": 1
+      },
+      {
+        "moveBase": "watergun",
+        "level": 1
+      },
+      {
+        "moveBase": "tailwhip",
+        "level": 4
+      }
+    ],
+    "evolutions": [
+      {
+        "evolvesInto": "008",
+        "requiredLevel": 16,
+        "requiredItem": null
+      }
+    ]
+  },
+  {
+    "id": "025",
+    "name": "Pikachu",
+    "description": "When it is angered, it immediately discharges the energy stored in the pouches in its cheeks.",
+    "frontSpriteUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+    "backSpriteUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/25.png",
+    "type1": "Electric",
+    "type2": null,
+    "maxHp": 35,
+    "attack": 55,
+    "defense": 40,
+    "spAttack": 50,
+    "spDefense": 50,
+    "speed": 90,
+    "expYield": 112,
+    "growthRate": "Medium",
+    "catchRate": 190,
+    "learnableMoves": [
+      {
+        "moveBase": "tackle",
+        "level": 1
+      },
+      {
+        "moveBase": "thundershock",
+        "level": 1
+      },
+      {
+        "moveBase": "growl",
+        "level": 5
+      },
+      {
+        "moveBase": "quickattack",
+        "level": 10
+      }
+    ],
+    "evolutions": [
+      {
+        "evolvesInto": "026",
+        "requiredLevel": null,
+        "requiredItem": "thunderstone"
+      }
+    ]
+  },
+  {
+    "id": "133",
+    "name": "Eevee",
+    "description": "Its genetic code is irregular. It may mutate if it is exposed to radiation from element stones.",
+    "frontSpriteUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png",
+    "backSpriteUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/133.png",
+    "type1": "Normal",
+    "type2": null,
+    "maxHp": 55,
+    "attack": 55,
+    "defense": 50,
+    "spAttack": 45,
+    "spDefense": 65,
+    "speed": 55,
+    "expYield": 65,
+    "growthRate": "Medium",
+    "catchRate": 45,
+    "learnableMoves": [
+      {
+        "moveBase": "tackle",
+        "level": 1
+      },
+      {
+        "moveBase": "tailwhip",
+        "level": 1
+      },
+      {
+        "moveBase": "sandattack",
+        "level": 5
+      },
+      {
+        "moveBase": "quickattack",
+        "level": 10
+      }
+    ],
+    "evolutions": [
+      {
+        "evolvesInto": "134",
+        "requiredLevel": null,
+        "requiredItem": "waterstone"
+      },
+      {
+        "evolvesInto": "135",
+        "requiredLevel": null,
+        "requiredItem": "thunderstone"
+      },
+      {
+        "evolvesInto": "136",
+        "requiredLevel": null,
+        "requiredItem": "firestone"
       }
     ]
   }

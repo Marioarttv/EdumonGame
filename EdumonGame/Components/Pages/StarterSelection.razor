@@ -1,0 +1,1001 @@
+﻿@page "/starter-selection"
+@using EdumonGame.Services
+@using EdumonGame.Models
+
+<div class="vn-container">
+    <div class="background-scene">
+        <div class="background-gradient"></div>
+        <div class="floating-particles">
+            @for (int i = 0; i < 20; i++)
+            {
+                <div class="particle particle-@i"></div>
+            }
+        </div>
+    </div>
+
+    <div class="vn-content">
+        @if (!showStarters)
+        {
+            <!-- Visual Novel Dialogue -->
+            <div class="dialogue-section @(introComplete ? "fade-out" : "")" @onclick="ContinueDialogue">
+                <div class="character-container">
+                    <div class="character @(characterVisible ? "visible" : "")">
+                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/trainers/professor-oak.png" class="character-image" alt="Professor Maple" />
+                        <div class="character-shadow"></div>
+                    </div>
+                </div>
+
+                <div class="dialogue-box @(dialogueVisible ? "visible" : "")">
+                    <div class="speaker-name">Professor Maple</div>
+                    <div class="dialogue-text">
+                        <p class="@(textAnimating ? "animating" : "")">@currentText</p>
+                    </div>
+                    <div class="dialogue-controls">
+                        <div class="skip-hint">Click anywhere to @(textAnimating ? "skip" : "continue")</div>
+                        <div class="continue-indicator @(canContinue ? "visible" : "")">
+                            <span class="continue-triangle"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (showStarters)
+        {
+            <!-- Starter Selection -->
+            <div class="selection-interface @(showStarters ? "visible" : "")">
+                <div class="selection-header">
+                    <h1 class="selection-title">Choose Your Learning Partner</h1>
+                    <p class="selection-subtitle">Each Edumon specializes in different educational subjects</p>
+                </div>
+
+                <div class="cards-container">
+                    @foreach (var starter in starterOptions)
+                    {
+                        <div class="edumon-card @(selectedStarter?.Id == starter.Id ? "selected" : "")"
+                             @onclick="() => SelectStarter(starter)">
+                            <div class="card-shine"></div>
+                            
+                            <div class="edumon-portrait">
+                                <img src="@starter.FrontSpriteUrl" alt="@starter.Name" />
+                                <div class="edumon-shadow"></div>
+                            </div>
+                            
+                            <div class="type-badge type-@starter.Type1.ToString().ToLower()">
+                                @starter.Type1
+                            </div>
+
+                            <div class="edumon-info">
+                                <h3 class="edumon-name">@starter.Name</h3>
+                                <div class="specialty-tag">@GetSpecialty(starter.Type1)</div>
+                                
+                                <div class="description-box">
+                                    <p>@starter.Description</p>
+                                </div>
+
+                                <div class="stat-grid">
+                                    <div class="stat-bar">
+                                        <span class="stat-label">Learning</span>
+                                        <div class="stat-track">
+                                            <div class="stat-fill" style="width: @(starter.SpAttack)%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-bar">
+                                        <span class="stat-label">Focus</span>
+                                        <div class="stat-track">
+                                            <div class="stat-fill" style="width: @(starter.Defense)%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-bar">
+                                        <span class="stat-label">Energy</span>
+                                        <div class="stat-track">
+                                            <div class="stat-fill" style="width: @(starter.Speed)%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="trait-cloud">
+                                    @foreach (var trait in GetPersonalityTraits(starter.Type1))
+                                    {
+                                        <span class="trait-pill">@trait</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="selection-marker">
+                                <div class="checkmark"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="confirm-panel @(selectedStarter != null ? "visible" : "")">
+                    <button class="confirm-button" @onclick="ConfirmSelection" disabled="@(selectedStarter == null)">
+                        <span class="button-text">Begin Journey with @(selectedStarter?.Name ?? "")</span>
+                        <div class="button-glow"></div>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Modern Visual Novel Style */
+    .vn-container {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Segoe UI', 'Roboto', sans-serif;
+    }
+
+    .background-scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+
+    .background-gradient {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #312e81 0%, #4f46e5 30%, #8b5cf6 70%, #c026d3 100%);
+        opacity: 0.8;
+        z-index: -2;
+    }
+
+    .floating-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .particle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        filter: blur(1px);
+        animation: float-particle 15s linear infinite;
+    }
+
+    .particle-0 { left: 10%; top: 15%; width: 8px; height: 8px; opacity: 0.5; animation-delay: 0s; animation-duration: 20s; }
+    .particle-1 { left: 20%; top: 25%; width: 6px; height: 6px; opacity: 0.7; animation-delay: 0.5s; animation-duration: 15s; }
+    .particle-2 { left: 30%; top: 45%; width: 10px; height: 10px; opacity: 0.3; animation-delay: 1.0s; animation-duration: 18s; }
+    .particle-3 { left: 40%; top: 65%; width: 5px; height: 5px; opacity: 0.6; animation-delay: 1.5s; animation-duration: 12s; }
+    .particle-4 { left: 50%; top: 85%; width: 7px; height: 7px; opacity: 0.5; animation-delay: 2.0s; animation-duration: 22s; }
+    .particle-5 { left: 60%; top: 35%; width: 9px; height: 9px; opacity: 0.4; animation-delay: 2.5s; animation-duration: 17s; }
+    .particle-6 { left: 70%; top: 55%; width: 4px; height: 4px; opacity: 0.7; animation-delay: 3.0s; animation-duration: 19s; }
+    .particle-7 { left: 80%; top: 75%; width: 6px; height: 6px; opacity: 0.5; animation-delay: 3.5s; animation-duration: 14s; }
+    .particle-8 { left: 90%; top: 25%; width: 8px; height: 8px; opacity: 0.6; animation-delay: 4.0s; animation-duration: 16s; }
+    .particle-9 { left: 15%; top: 40%; width: 7px; height: 7px; opacity: 0.4; animation-delay: 4.5s; animation-duration: 21s; }
+    .particle-10 { left: 25%; top: 60%; width: 5px; height: 5px; opacity: 0.7; animation-delay: 5.0s; animation-duration: 13s; }
+    .particle-11 { left: 35%; top: 80%; width: 9px; height: 9px; opacity: 0.3; animation-delay: 5.5s; animation-duration: 23s; }
+    .particle-12 { left: 45%; top: 20%; width: 6px; height: 6px; opacity: 0.6; animation-delay: 6.0s; animation-duration: 18s; }
+    .particle-13 { left: 55%; top: 50%; width: 8px; height: 8px; opacity: 0.5; animation-delay: 6.5s; animation-duration: 15s; }
+    .particle-14 { left: 65%; top: 70%; width: 4px; height: 4px; opacity: 0.7; animation-delay: 7.0s; animation-duration: 20s; }
+    .particle-15 { left: 75%; top: 30%; width: 7px; height: 7px; opacity: 0.4; animation-delay: 7.5s; animation-duration: 17s; }
+    .particle-16 { left: 85%; top: 45%; width: 5px; height: 5px; opacity: 0.6; animation-delay: 8.0s; animation-duration: 14s; }
+    .particle-17 { left: 5%; top: 65%; width: 9px; height: 9px; opacity: 0.3; animation-delay: 8.5s; animation-duration: 22s; }
+    .particle-18 { left: 95%; top: 85%; width: 6px; height: 6px; opacity: 0.5; animation-delay: 9.0s; animation-duration: 19s; }
+    .particle-19 { left: 50%; top: 95%; width: 8px; height: 8px; opacity: 0.4; animation-delay: 9.5s; animation-duration: 16s; }
+
+    .vn-content {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Dialogue Section */
+    .dialogue-section {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        position: relative;
+        opacity: 1;
+        transition: opacity 1s ease;
+        cursor: pointer;
+    }
+
+    .dialogue-section.fade-out {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .character-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        padding-top: 2rem;
+    }
+
+    .character {
+        position: relative;
+        transform: translateY(30px);
+        opacity: 0;
+        transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 1s ease;
+    }
+
+    .character.visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .character-image {
+        width: 300px;
+        height: 400px;
+        object-fit: contain;
+        filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+    }
+
+    .character-shadow {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 20px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 50%;
+        filter: blur(10px);
+    }
+
+    .dialogue-box {
+        position: relative;
+        background: rgba(17, 24, 39, 0.85);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        margin: 0 auto 2rem;
+        max-width: 800px;
+        width: 90%;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 0 0 15px rgba(79, 70, 229, 0.3);
+        transform: translateY(20px);
+        opacity: 0;
+        transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease;
+    }
+
+    .dialogue-box.visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .speaker-name {
+        position: absolute;
+        top: -15px;
+        left: 25px;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transform: translateY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .dialogue-box:hover .speaker-name {
+        transform: translateY(-3px);
+    }
+
+    .dialogue-text {
+        color: #f8fafc;
+        font-size: 1.25rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        min-height: 5rem;
+    }
+
+    .dialogue-text p {
+        margin: 0;
+    }
+
+    .dialogue-text p.animating::after {
+        content: '|';
+        display: inline-block;
+    }
+
+    .dialogue-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .skip-hint {
+        color: rgba(248, 250, 252, 0.6);
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+
+    .continue-indicator {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .continue-indicator.visible {
+        opacity: 1;
+    }
+
+    .continue-triangle {
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 15px solid #f8fafc;
+        filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.5));
+    }
+
+    /* Starter Selection */
+    .selection-interface {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .selection-interface.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .selection-header {
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    .selection-title {
+        font-size: 3rem;
+        margin: 0;
+        background: linear-gradient(90deg, #facc15, #f59e0b);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 2px 20px rgba(250, 204, 21, 0.3);
+        font-weight: 800;
+    }
+
+    .selection-subtitle {
+        font-size: 1.3rem;
+        margin: 0.5rem 0 0;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .cards-container {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin: 0 auto;
+        padding: 0 2rem;
+        flex-wrap: wrap;
+        max-width: 1400px;
+    }
+
+    .edumon-card {
+        background: rgba(30, 41, 59, 0.7);
+        border: 2px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        width: 340px;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        transform: translateY(0) scale(1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+    }
+
+    .edumon-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 20px rgba(99, 102, 241, 0.4);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .edumon-card.selected {
+        border-color: #10b981;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 25px rgba(16, 185, 129, 0.5);
+        transform: translateY(-15px) scale(1.05);
+    }
+
+    .card-shine {
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            rgba(255,255,255,0) 0%, 
+            rgba(255,255,255,0.05) 25%, 
+            rgba(255,255,255,0.1) 50%, 
+            rgba(255,255,255,0.05) 75%, 
+            rgba(255,255,255,0) 100%);
+        z-index: 9;
+        transition: left 0.8s ease;
+    }
+
+    .edumon-card:hover .card-shine {
+        left: 150%;
+    }
+
+    .edumon-portrait {
+        position: relative;
+        margin: 0 auto 1.5rem;
+        width: 130px;
+        height: 130px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .edumon-portrait img {
+        width: 90%;
+        height: 90%;
+        object-fit: contain;
+        position: relative;
+        z-index: 2;
+        filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+    }
+
+    .edumon-shadow {
+        position: absolute;
+        bottom: 0;
+        width: 80px;
+        height: 10px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 50%;
+        filter: blur(5px);
+        z-index: 1;
+    }
+
+    .type-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .type-water {
+        background: linear-gradient(90deg, #0ea5e9, #2563eb);
+    }
+
+    .type-fire {
+        background: linear-gradient(90deg, #f97316, #dc2626);
+    }
+
+    .type-grass {
+        background: linear-gradient(90deg, #22c55e, #15803d);
+    }
+
+    .edumon-info {
+        color: white;
+        text-align: center;
+    }
+
+    .edumon-name {
+        font-size: 1.8rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #e2e8f0, #f8fafc);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .specialty-tag {
+        color: rgba(255, 255, 255, 0.7);
+        font-style: italic;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .description-box {
+        background: rgba(15, 23, 42, 0.5);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.2rem;
+        height: 80px;
+        overflow: auto;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .description-box p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .stat-grid {
+        margin: 1.2rem 0;
+    }
+
+    .stat-bar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.8rem;
+    }
+
+    .stat-label {
+        width: 70px;
+        text-align: right;
+        padding-right: 10px;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .stat-track {
+        flex: 1;
+        height: 8px;
+        background: rgba(15, 23, 42, 0.5);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .stat-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .edumon-card:nth-child(1) .stat-fill {
+        background: linear-gradient(90deg, #0ea5e9, #2563eb);
+    }
+
+    .edumon-card:nth-child(2) .stat-fill {
+        background: linear-gradient(90deg, #f97316, #dc2626);
+    }
+
+    .edumon-card:nth-child(3) .stat-fill {
+        background: linear-gradient(90deg, #22c55e, #15803d);
+    }
+
+    .trait-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .trait-pill {
+        background: rgba(99, 102, 241, 0.2);
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        color: rgba(255, 255, 255, 0.9);
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .edumon-card:hover .trait-pill {
+        background: rgba(99, 102, 241, 0.3);
+    }
+
+    .selection-marker {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        width: 25px;
+        height: 25px;
+        background: #10b981;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: scale(0);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .edumon-card.selected .selection-marker {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    .checkmark {
+        width: 10px;
+        height: 15px;
+        border-right: 3px solid white;
+        border-bottom: 3px solid white;
+        transform: rotate(45deg) translate(-2px, -2px);
+    }
+
+    .confirm-panel {
+        text-align: center;
+        padding: 2rem 0;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .confirm-panel.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .confirm-button {
+        background: linear-gradient(90deg, #10b981, #059669);
+        border: none;
+        padding: 1.2rem 3rem;
+        border-radius: 50px;
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: white;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+    }
+
+    .confirm-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .confirm-button:not(:disabled):hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.6);
+    }
+
+    .button-glow {
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            rgba(255,255,255,0) 0%, 
+            rgba(255,255,255,0.2) 50%, 
+            rgba(255,255,255,0) 100%);
+        transition: left 0.8s ease;
+    }
+
+    .confirm-button:hover .button-glow {
+        left: 150%;
+    }
+</style>
+
+@code {
+    [Inject]
+    private GameState GameState { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private bool showStarters = false;
+    private bool introComplete = false;
+    private bool canContinue = false;
+    private int currentDialogueIndex = -1;
+    private EdumonBase selectedStarter = null;
+    
+    // Visual novel variables
+    private bool characterVisible = false;
+    private bool dialogueVisible = false;
+    private bool textAnimating = false;
+    private string currentText = "";
+    private string fullText = "";
+    private int textIndex = 0;
+    private System.Threading.CancellationTokenSource? typingCts;
+
+    private readonly string[] professorDialogue = new[]
+    {
+        "Welcome, young trainer! I'm Professor Maple, and I've dedicated my life to studying the fascinating world of Edumon.",
+        "Edumon are extraordinary creatures that embody the power of knowledge and learning. Each one specializes in different educational subjects.",
+        "Today marks the beginning of your journey as an Edumon trainer! But first, you must choose your learning partner.",
+        "I have three exceptional Edumon here, each with unique strengths and educational focuses. Choose wisely - this decision will shape your entire adventure!"
+    };
+
+    private List<EdumonBase> starterOptions = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        starterOptions = CreateStarterOptions();
+
+        // Start the introduction sequence
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(1000);
+            
+            // Show character first
+            await InvokeAsync(() => 
+            {
+                characterVisible = true;
+                StateHasChanged();
+            });
+            
+            await Task.Delay(500);
+            
+            // Show dialogue box
+            await InvokeAsync(() => 
+            {
+                dialogueVisible = true;
+                StateHasChanged();
+            });
+            
+            await Task.Delay(500);
+            
+            // Start typing first dialogue
+            await InvokeAsync(() =>
+            {
+                currentDialogueIndex = 0;
+                StartTypewriterEffect(professorDialogue[0]);
+                StateHasChanged();
+            });
+        });
+    }
+
+    private async Task StartTypewriterEffect(string text)
+    {
+        // Cancel any existing typing operation
+        typingCts?.Cancel();
+        typingCts = new System.Threading.CancellationTokenSource();
+        var token = typingCts.Token;
+
+        textAnimating = true;
+        fullText = text;
+        currentText = "";
+        textIndex = 0;
+        
+        try
+        {
+            // Typewriter effect
+            const int typingDelay = 30; // milliseconds per character
+            
+            while (textIndex < fullText.Length)
+            {
+                if (token.IsCancellationRequested)
+                    break;
+                    
+                textIndex++;
+                currentText = fullText.Substring(0, textIndex);
+                StateHasChanged();
+                
+                await Task.Delay(typingDelay, token);
+            }
+            
+            currentText = fullText; // Ensure full text is shown
+            textAnimating = false;
+            canContinue = true;
+            StateHasChanged();
+        }
+        catch (System.Threading.Tasks.TaskCanceledException)
+        {
+            // Task was canceled, which is expected when skipping text
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Typewriter effect error: {ex.Message}");
+            // Show full text if there's an error
+            currentText = fullText;
+            textAnimating = false;
+            canContinue = true;
+            StateHasChanged();
+        }
+    }
+
+    private List<EdumonBase> CreateStarterOptions()
+    {
+        // Create moves for the starters
+        var tackle = new MoveBase
+        {
+            Id = "tackle",
+            Name = "Tackle",
+            Description = "A physical attack in which the user charges and slams into the target with its whole body.",
+            Type = EdumonType.Normal,
+            Power = 40,
+            Accuracy = 100,
+            Category = MoveBase.MoveCategory.Physical
+        };
+
+        var waterGun = new MoveBase
+        {
+            Id = "watergun",
+            Name = "Water Gun",
+            Description = "The target is blasted with a forceful shot of water.",
+            Type = EdumonType.Water,
+            Power = 40,
+            Accuracy = 100,
+            Category = MoveBase.MoveCategory.Special
+        };
+
+        var ember = new MoveBase
+        {
+            Id = "ember",
+            Name = "Ember",
+            Description = "The target is attacked with small flames.",
+            Type = EdumonType.Fire,
+            Power = 40,
+            Accuracy = 100,
+            Category = MoveBase.MoveCategory.Special
+        };
+
+        var vineWhip = new MoveBase
+        {
+            Id = "vinewhip",
+            Name = "Vine Whip",
+            Description = "The target is struck with slender, whiplike vines.",
+            Type = EdumonType.Grass,
+            Power = 45,
+            Accuracy = 100,
+            Category = MoveBase.MoveCategory.Physical
+        };
+
+        return new List<EdumonBase>
+        {
+            new EdumonBase
+            {
+                Id = "007",
+                Name = "Aquaris",
+                Description = "A curious water-type Edumon that loves exploring scientific concepts. Its analytical mind helps solve complex problems with ease.",
+                FrontSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png",
+                BackSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/7.png",
+                Type1 = EdumonType.Water,
+                Type2 = EdumonType.None,
+                MaxHp = 44,
+                Attack = 48,
+                Defense = 65,
+                SpAttack = 50,
+                SpDefense = 64,
+                Speed = 43,
+                ExpYield = 63,
+                GrowthRate = GrowthRate.MediumSlow,
+                LearnableMoves = new List<LearnableMove>
+                {
+                    new LearnableMove { MoveBase = tackle, Level = 1 },
+                    new LearnableMove { MoveBase = waterGun, Level = 1 }
+                }
+            },
+            new EdumonBase
+            {
+                Id = "004",
+                Name = "Flamewise",
+                Description = "A passionate fire-type Edumon with a love for creative expression and literature. Its fiery spirit ignites imagination in others.",
+                FrontSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
+                BackSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/4.png",
+                Type1 = EdumonType.Fire,
+                Type2 = EdumonType.None,
+                MaxHp = 39,
+                Attack = 52,
+                Defense = 43,
+                SpAttack = 60,
+                SpDefense = 50,
+                Speed = 65,
+                ExpYield = 62,
+                GrowthRate = GrowthRate.MediumSlow,
+                LearnableMoves = new List<LearnableMove>
+                {
+                    new LearnableMove { MoveBase = tackle, Level = 1 },
+                    new LearnableMove { MoveBase = ember, Level = 1 }
+                }
+            },
+            new EdumonBase
+            {
+                Id = "001",
+                Name = "Mathleaf",
+                Description = "A logical grass-type Edumon that excels at mathematical thinking and problem-solving. Its growth represents the beauty of logical progression.",
+                FrontSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+                BackSpriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png",
+                Type1 = EdumonType.Grass,
+                Type2 = EdumonType.Poison,
+                MaxHp = 45,
+                Attack = 49,
+                Defense = 49,
+                SpAttack = 65,
+                SpDefense = 65,
+                Speed = 45,
+                ExpYield = 64,
+                GrowthRate = GrowthRate.MediumSlow,
+                LearnableMoves = new List<LearnableMove>
+                {
+                    new LearnableMove { MoveBase = tackle, Level = 1 },
+                    new LearnableMove { MoveBase = vineWhip, Level = 1 }
+                }
+            }
+        };
+    }
+
+    private string GetSpecialty(EdumonType type)
+    {
+        return type switch
+        {
+            EdumonType.Water => "Science & Research Specialist",
+            EdumonType.Fire => "Literature & Arts Specialist",
+            EdumonType.Grass => "Mathematics & Logic Specialist",
+            _ => "General Studies"
+        };
+    }
+
+    private List<string> GetPersonalityTraits(EdumonType type)
+    {
+        return type switch
+        {
+            EdumonType.Water => new List<string> { "Analytical", "Curious", "Methodical" },
+            EdumonType.Fire => new List<string> { "Creative", "Passionate", "Expressive" },
+            EdumonType.Grass => new List<string> { "Logical", "Patient", "Strategic" },
+            _ => new List<string> { "Balanced", "Adaptable" }
+        };
+    }
+
+    private async Task ContinueDialogue()
+    {
+        // If text is still animating, show full text immediately
+        if (textAnimating)
+        {
+            typingCts?.Cancel();
+            currentText = fullText;
+            textAnimating = false;
+            canContinue = true;
+            StateHasChanged();
+            return;
+        }
+        
+        if (currentDialogueIndex < professorDialogue.Length - 1)
+        {
+            canContinue = false;
+            currentDialogueIndex++;
+            StateHasChanged();
+
+            await Task.Delay(300);
+            await StartTypewriterEffect(professorDialogue[currentDialogueIndex]);
+        }
+        else
+        {
+            // Show starters
+            introComplete = true;
+            StateHasChanged();
+
+            await Task.Delay(1000);
+            showStarters = true;
+            StateHasChanged();
+        }
+    }
+
+    private void SelectStarter(EdumonBase starter)
+    {
+        selectedStarter = starter;
+        StateHasChanged();
+    }
+
+    private async Task ConfirmSelection()
+    {
+        if (selectedStarter != null)
+        {
+            // Add the selected starter to the player's collection
+            var starter = new Edumon(selectedStarter, 5);
+            GameState.PlayerEdumons.Clear(); // Remove any test data
+            GameState.PlayerEdumons.Add(starter);
+
+            // Navigate to the next screen (battle or main game)
+            NavigationManager.NavigateTo("edumon-list");
+        }
+    }
+}

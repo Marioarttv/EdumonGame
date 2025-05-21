@@ -22,7 +22,7 @@
   {
     "id": "growl",
     "name": "Growl",
-    "description": "The user growls in an endearing way, making opposing Pok�mon less wary. This lowers their Attack stat.",
+    "description": "The user growls in an endearing way, making opposing Pokémon less wary. This lowers their Attack stat.",
     "type": "Normal",
     "power": 0,
     "accuracy": 100,
@@ -71,5 +71,143 @@
     "target": "Foe",
     "soundUrl": "/sounds/moves/ember.mp3",
     "animationId": "ember"
+  },
+  {
+    "id": "watergun",
+    "name": "Water Gun",
+    "description": "The user shoots a jet of water at the target.",
+    "type": "Water",
+    "power": 40,
+    "accuracy": 100,
+    "alwaysHits": false,
+    "priority": 0,
+    "category": "Special",
+    "effects": {
+      "boosts": [],
+      "status": "None",
+      "volatileStatus": "None"
+    },
+    "secondaries": [],
+    "target": "Foe",
+    "soundUrl": "/sounds/moves/watergun.mp3",
+    "animationId": "watergun"
+  },
+  {
+    "id": "thundershock",
+    "name": "Thunder Shock",
+    "description": "A jolt of electricity is hurled at the target to inflict damage. This may also leave the target with paralysis.",
+    "type": "Electric",
+    "power": 40,
+    "accuracy": 100,
+    "alwaysHits": false,
+    "priority": 0,
+    "category": "Special",
+    "effects": {
+      "boosts": [],
+      "status": "None",
+      "volatileStatus": "None"
+    },
+    "secondaries": [
+      {
+        "chance": 10,
+        "status": "Paralysis",
+        "volatileStatus": "None",
+        "boosts": [],
+        "target": "Foe"
+      }
+    ],
+    "target": "Foe",
+    "soundUrl": "/sounds/moves/thundershock.mp3",
+    "animationId": "thundershock"
+  },
+  {
+    "id": "quickattack",
+    "name": "Quick Attack",
+    "description": "The user lunges at the target at a speed that makes it almost invisible. This move always goes first.",
+    "type": "Normal",
+    "power": 40,
+    "accuracy": 100,
+    "alwaysHits": false,
+    "priority": 1,
+    "category": "Physical",
+    "effects": {
+      "boosts": [],
+      "status": "None",
+      "volatileStatus": "None"
+    },
+    "secondaries": [],
+    "target": "Foe",
+    "soundUrl": "/sounds/moves/quickattack.mp3",
+    "animationId": "quickattack"
+  },
+  {
+    "id": "tailwhip",
+    "name": "Tail Whip",
+    "description": "The user wags its tail cutely, making opposing Pokémon less wary and lowering their Defense stat.",
+    "type": "Normal",
+    "power": 0,
+    "accuracy": 100,
+    "alwaysHits": false,
+    "priority": 0,
+    "category": "Status",
+    "effects": {
+      "boosts": [
+        {
+          "stat": "Defense",
+          "boost": -1
+        }
+      ],
+      "status": "None",
+      "volatileStatus": "None"
+    },
+    "secondaries": [],
+    "target": "Foe",
+    "soundUrl": "/sounds/moves/tailwhip.mp3",
+    "animationId": "tailwhip"
+  },
+  {
+    "id": "sandattack",
+    "name": "Sand Attack",
+    "description": "Sand is hurled in the target's face, reducing its accuracy.",
+    "type": "Ground",
+    "power": 0,
+    "accuracy": 100,
+    "alwaysHits": false,
+    "priority": 0,
+    "category": "Status",
+    "effects": {
+      "boosts": [
+        {
+          "stat": "Accuracy",
+          "boost": -1
+        }
+      ],
+      "status": "None",
+      "volatileStatus": "None"
+    },
+    "secondaries": [],
+    "target": "Foe",
+    "soundUrl": "/sounds/moves/sandattack.mp3",
+    "animationId": "sandattack"
+  },
+  {
+    "id": "vinewhip",
+    "name": "Vine Whip",
+    "description": "The target is struck with slender, whiplike vines to inflict damage.",
+    "type": "Grass",
+    "power": 45,
+    "accuracy": 100,
+    "alwaysHits": false,
+    "priority": 0,
+    "category": "Physical",
+    "effects": {
+      "boosts": [],
+      "status": "None",
+      "volatileStatus": "None"
+    },
+    "secondaries": [],
+    "target": "Foe",
+    "soundUrl": "/sounds/moves/vinewhip.mp3",
+    "animationId": "vinewhip"
   }
 ]
